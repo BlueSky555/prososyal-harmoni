@@ -1,0 +1,28 @@
+#container {
+    display: flex;
+    margin-top: 100px;
+    width: auto;
+    flex-direction: column;
+    align-items: center;
+}
+
+#header {
+    display: inline-block;
+    font-size: 24px;
+    display: none;
+}
+
+#members {
+    width: min(90vw, 1000px);
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 20px;
+}
+
+.member {
+    padding: 30px;
+    background-color: hsl(from var(--main) h s l / 0.2);
+    border-radius: 10px;
+    border: 1px solid var(--light);
+
+}

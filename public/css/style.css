@@ -1,0 +1,88 @@
+@font-face {
+    font-family: 'Rubik';
+    src: url('/fonts/Rubik.ttf');
+}
+
+:root {
+    --main: #6700cf;
+    /*--light: #a26ada;*/
+    --light: hsl(from var(--main) h s calc(l * 1.7));
+}
+
+body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #fbf7ff;
+    color: black;
+}
+
+body, button, input {
+    font-family: 'Rubik';
+}
+
+html {
+    overflow-y: overlay;
+}
+
+button {
+    cursor: pointer;
+}
+
+img {
+    user-select: none;
+}
+
+::-webkit-scrollbar {
+    background-color: transparent;
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: hsl(from var(--main) h calc(s*0.3) l / 0.5);
+    border-radius: 5px;
+}
+
+b {
+    font-weight: 500;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+@keyframes from-out {
+    from {
+        right: -100%;
+    }
+    to {
+        right: 10px;
+    }
+}
+
+#error {
+    display: block;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: linear-gradient(120deg, #aa3333, #ff4444);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid #00000080;
+    font-size: 16px;
+    animation: from-out 200ms ease forwards;
+    z-index: 999999999999999;
+}

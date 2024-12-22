@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+</head>
+<style>
+    @font-face {
+        font-family: 'Rubik';
+        src: url('/fonts/Rubik.ttf');
+    }
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+    ::-webkit-scrollbar, ::-webkit-scrollbar-corner, ::-webkit-scrollbar-button {
+        background-color: transparent;
+        border: none;
+    }
+    ::-webkit-scrollbar-thumb {
+        background-color: lime;
+        border-radius: 10px;
+    }
+    ::selection {
+        background-color: lime;
+        color: black;
+    }
+    body {
+        font-family: 'Rubik';
+        background-color: black;
+        color: lime;
+    }
+    button, textarea {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 10px 20px;
+        color: lime;
+        font-family: monospace;
+        outline: 0;
+        border: none;
+        min-width: 200px;
+        font-size: 16px;
+    }
+    
+    button {
+        display: block;
+        cursor: pointer;
+        height: 15px;
+        line-height: 0px;
+        width: 100%;
+        transition: all 200ms;
+    }
+    button:hover {
+        color: red;
+    }
+    button:active {
+        background-color: red;
+        color: black;
+    }
+    #log {
+        font-family: monospace;
+        color: #abc;
+        max-width: 80vw;
+    }
+    #container {
+        position: absolute;
+        top: 10vh;
+        left: 50%;
+        transform: translate(-50%, 0%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
+<script>
+    window.addEventListener('load', () => {
+        order.onclick = () => {
+            if(action.value) fetch("/admin?command=" + encodeURIComponent(action.value)).catch(err => {
+                log.innerHTML = "<span style=\"color: red\">Error while fetching server.</span>";
+            }).then(res => res.text()).then(res => {
+                log.innerHTML = res.replaceAll("\n", "<br>");
+            });
+        }
+    });
+</script>
+<body>
+    <div id="container">
+        <h1>Admin Panel</h1>
+            <div id="container2">
+            <textarea type="text" name="" id="action" spellcheck="false" rows="20" cols="80"></textarea>
+            <button id="order">ORDER</button>
+            </div>
+        <p id="log"><p>
+    </div>
+</body>
+</html>

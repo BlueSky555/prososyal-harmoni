@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prososyal Harmoni</title>
+    <script src="js/script.js"></script>
+    <script defer src="js/statusFetcher.js"></script>
+    <script defer src="js/profile.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/select.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+    <div id="navbar">
+        <div class="l"><a href="/"><span class="title">PROSOSYAL HARMONİ</span></a></div>
+        <div class="r">
+            <a href="/about"><div class="about">Hakkımızda</div></a>
+            <a href="/"><div id="profile">Hesabım</div></a>
+            <a href="/logout"><div class="help">Çıkış Yap</div></a>
+        </div>
+    </div>
+    <div class="container" id="mainContainer" style="display: none">
+        <div id="profileCard">
+            <div>
+                <img src="assets/profile.jpg" alt="Profile">
+            </div>
+            <div>
+                <div class="name"><span id="infoFullname"></span>&nbsp;<span id="infoName"></span></div>
+                <div><b>Sınıfı: </b><span id="infoClass"></span></div>
+                <div><b>İlgi alanları: </b><span id="infoHobbies"></span></div>
+                <div><b>Hakkında: </b><span id="infoAboutMe"></span></div>
+                <div class="modifyProfile" style="display: none;">
+                    <div class="modifyTitle">Profili Düzenle</div>
+                    <textarea name="" id="modifyHobbies" placeholder="İlgi alanların..."></textarea>
+                    <textarea name="" id="modifyAboutMe" placeholder="Hakkında..."></textarea>
+                    <div id="modifyInfo">Boş bırakılan alanlar değiştirilmeyecektir.</div>
+                    <div class="btn">Kaydet</div>
+                </div>
+            </div>
+        </div>
+        <div class="reviewsHeader">Değerlendirmeler</div>
+        <div id="averageScore">Ortalama Puan: 0</div>
+        <div class="reviewList">
+            <div class="reviewCard">
+                <div class="name">Anonim Kullanıcı</div>
+                <div class="reviewScore"><div class="reviewStars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="halfstar"></div><div class="nostar"></div></div></div>
+                <div class="reviewText">Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis possimus nihil quisquam sit!</div>
+            </div>
+        </div>
+        <div class="writeContainer">
+            <div class="reviewCard">
+                <div class="name write">Puan Ver</div>
+                <div class="reviewScore"><div class="reviewStars" id="starInput"><div class="nostar"></div><div class="nostar"></div><div class="nostar"></div><div class="nostar"></div><div class="nostar"></div></div></div>
+                <textarea name="" id="textInput" placeholder="Lütfen yorumlarınızı kurallara uyarak yapın..." maxlength="250"></textarea>
+                <label class="checkbox">İsmimi diğer kullanıcılardan gizle
+                    <input type="checkbox" id="anonInput">
+                    <span class="checkmark"></span>
+                </label>
+                <div class="smallinfo">*Daha önceden bu kullanıcıya değerlendirme yazdıysanız eskisi ile değiştirilecektir.</div>
+                <div class="reviewBtn btn" onclick="sendReview()">Paylaş</div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="infoContainer">
+        <div id="loadInfo">Yükleniyor...</div>
+    </div>
+</body>
+</html>

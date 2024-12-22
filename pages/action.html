@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prososyal Harmoni</title>
+    <script src="js/script.js"></script>
+    <script src="js/action.js" defer></script>
+    <script src="js/statusFetcher.js"></script>
+    <script src="js/select.js" defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/action.css">
+    <link rel="stylesheet" href="css/select.css">
+    <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+    <div id="navbar">
+        <div class="l"><a href="/"><span class="title">PROSOSYAL HARMONİ</span></a></div>
+        <div class="r">
+            <a href="/about"><div class="about">Hakkımızda</div></a>
+            <a><div id="profile"></div>Hesabım</a>
+            <a href="/logout"><div class="help">Çıkış Yap</div></a>
+        </div>
+    </div>
+    <div class="center">
+        <div id="actions">
+            <div onmouseenter="animateSelector(0)" onmouseleave="returnToSelected()" onclick="select(0)" class="selected">Aktiviteler</div>
+            <div onmouseenter="animateSelector(1)" onmouseleave="returnToSelected()" onclick="select(1)">Akran Eğitimi</div>
+            <div onmouseenter="animateSelector(2)" onmouseleave="returnToSelected()" onclick="select(2)">Duyurular</div>
+            <div class="selector"></div>
+        </div>
+        <div id="activityContainer" class="container">
+            <div class="btnFlex">
+                <span class="new btn">Yeni aktivite oluştur</span>
+                <span class="refresh btn">Listeyi yenile</span>
+            </div>
+            <div class="create" id="activityCreate" style="display: none;">
+                <div class="box">
+                    <div class="header">Yeni Aktivite Oluştur</div>
+                    <div class="custom-select">
+                        <select name="" id="actGenre">
+                            <option value="" selected default>-Tür Seçiniz-</option>
+                            <option value="Spor">Spor</option>
+                            <option value="Zeka Oyunları">Zeka Oyunları</option>
+                            <option value="Müzik">Müzik</option>
+                            <option value="Sanat">Sanat</option>
+                        </select>
+                    </div>
+                    <div class="custom-select">
+                        <select name="" id="actActivity">
+                            <option value="" selected default>-Alt Tür Seçiniz-</option>
+                        </select>
+                    </div>
+                    <div class="custom-select">
+                        <select name="" id="actPlace">
+                            <option value="" selected default>-Mekan Seçiniz-</option>
+                            <option value="Okul">Okul</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <span>Katılımcı Sayısı: </span><span class="numberInput" id="actMaxParticipants" contenteditable max="10" min="2">2</span><span> kişi</span>
+                    </div>
+                    <div class="row">
+                        <span>Başlangıç: </span><span class="numberInput" id="actStart" contenteditable max="600" min="1">19:20</span><span></span>
+                        <span>Bitiş: </span><span class="numberInput" id="actEnd" contenteditable max="600" min="1">19:20</span><span></span>
+                    </div>
+                    <div class="row">
+                        <div>Açıklama:</div>
+                        <textarea name="" id="actDesc" maxlength="50"></textarea>
+                    </div>
+                    <div class="btn" onclick="createActivity()">Oluştur</div>
+                </div>
+            </div>
+            <div class="list"></div>
+            <space></space>
+        </div>
+        <div id="eduContainer" class="container" style="display: none;">
+            <div class="btnFlex">
+                <span class="new1 btn">Eğitim Ver</span>
+                <span class="new2 btn">Eğitim Al</span>
+                <span class="refresh btn">Listeyi yenile</span>
+            </div>
+            <div class="create" id="eduCreate" style="display: none;">
+                <div class="box">
+                    <div class="header">Yeni Eğitim Oluştur</div>
+                    <div class="custom-select">
+                        <select name="" id="eduGenre">
+                            <option value="" selected default>-Tür Seçiniz-</option>
+                            <option value="Ders">Ders</option>
+                            <option value="Zeka Oyunları">Zeka Oyunları</option>
+                        </select>
+                    </div>
+                    <div class="custom-select">
+                        <select name="" id="eduSubgenre">
+                            <option value="" selected default>-Alt Tür Seçiniz-</option>
+                        </select>
+                    </div>
+                    <div class="custom-select">
+                        <select name="" id="eduPlace">
+                            <option value="" selected default>-Mekan Seçiniz-</option>
+                            <option value="Okul">Okul</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <span>Öğrenci Kontenjanı: </span><span class="numberInput" id="eduMaxParticipants" contenteditable max="10" min="2">2</span><span> kişi</span>
+                    </div>
+                    <div class="row">
+                        <span>Başlangıç: </span><span class="numberInput" id="eduStart" contenteditable max="600" min="1">19:20</span><span></span>
+                    </div>
+                    <div class="row">
+                        <span>Bitiş: </span><span class="numberInput" id="eduEnd" contenteditable max="600" min="1">19:20</span><span></span>
+                    </div>
+                    <div class="btn" onclick="createActivity()">Oluştur</div>
+                </div>
+            </div>
+            <div class="list"></div>
+        </div>
+        <div id="ancContainer" class="container" style="display: none;"></div>
+    </div>
+</body>
+</html>
