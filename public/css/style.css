@@ -7,6 +7,7 @@
     --main: #6700cf;
     /*--light: #a26ada;*/
     --light: hsl(from var(--main) h s calc(l * 1.7));
+    --bg: hsl(from var(--main) h s 99%);
 }
 
 body {
@@ -17,8 +18,10 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    background-color: #fbf7ff;
+    background-color: var(--bg);
     color: black;
+    overflow-x: hidden;
+    user-select: none;
 }
 
 body, button, input {
@@ -26,6 +29,7 @@ body, button, input {
 }
 
 html {
+    overflow-x: hidden;
     overflow-y: overlay;
 }
 

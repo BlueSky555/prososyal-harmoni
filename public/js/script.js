@@ -38,7 +38,7 @@ async function randColor(name, saturation = 80, lightness = 80) {
     return `hsl(${await randHue(name)}, ${saturation}%, ${lightness}%)`;
 }
 
-let errorElement;
+let errorElement, rmTimeout;
 
 function error(t) {
     if(errorElement) errorElement.remove();
@@ -46,4 +46,13 @@ function error(t) {
     errorElement.id = "error";
     errorElement.innerHTML = t;
     document.body.appendChild(errorElement);
+
+    clearTimeout(rmTimeout);
+    rmTimeout = setTimeout(() => {
+        errorElement.animate({ opacity: 0 }, {duration: 600, "easing-function": "ease", fill: "forwards"}).onfinish = () => {
+            errorElement.remove();
+        };
+    }, 6000);
 }
+
+function antiEjection(s) { return s.replace(/</g, "&lt;").replace(/>/g, "&gt;"); }

@@ -11,12 +11,14 @@ $("#activityContainer .new").onclick = (e) => {
 }
 
 $("#eduContainer .new1").onclick = (e) => {
-    isTeacher = true;
+    asTeacher = true;
+    $("#eduCreate .header").innerHTML = "Eğitim Ver";
     $("#eduCreate").style.display = "flex";
 }
 
 $("#eduContainer .new2").onclick = (e) => {
-    isTeacher = false;
+    asTeacher = false;
+    $("#eduCreate .header").innerHTML = "Eğitim Al";
     $("#eduCreate").style.display = "flex";
 }
 
@@ -36,10 +38,12 @@ let selectedTab = 0;
 let tabs = ["activity", "edu", "anc"];
 
 let activityOptions = {
-    "Spor": ["Futbol", "Basketbol", "Masa Tenisi", "Badminton", "Voleybol"],
-    "Zeka Oyunları": ["Satranç", "Dama"],
-    "Müzik": ["Müzik"],
-    "Sanat": ["Sanat"],
+    "Spor": ["Futbol", "Basketbol", "Masa Tenisi", "Badminton", "Voleybol", "Dart", "Diğer"],
+    "Zeka Oyunları": ["Satranç", "Dama", "Mangala", "Denge Oyunu", "Hedef", "Diğer"],
+    "Müzik": ["Piyano", "Gitar", "Diğer"],
+    "Görsel Sanatlar": ["Karikatür", "Karakalem", "Mandala", "Sulu Boya", "Diğer"],
+    "Sosyal Sorumluluk": ["Çöp Toplama", "Kedi Besleme", "Kuş Besleme", "Diğer"],
+    "Edebiyat": ["Kitap Okuma", "Şiir Yazma", "Hikaye Yazma", "Diğer"],
 };
 
 let eduOptions = {
@@ -47,7 +51,7 @@ let eduOptions = {
     "Zeka Oyunları": ["Satranç", "Dama"]
 };
 
-let isTeacher = false;
+let asTeacher = false;
 
 function animateSelector(id, anim = true) {
     let rect1 = $("#actions").getBoundingClientRect();
@@ -100,9 +104,10 @@ function loadActs() {
                 <img class="ficon" src="assets/${act.genre}.svg" />
                 <div class="genre"><img class="genreIcon" src="assets/${act.genre}.svg" /><div class="genreText">${act.genre}</div></div>
                 <div class="info"><b>Alt kategori:</b> ${act.activity}</div>
-                <div class="info"><b>Açıklama:</b> ${act.desc.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+                <div class="info"><b>Açıklama:</b> ${antiEjection(act.desc)}</div>
                 <div class="info"><b>Yer:</b> ${act.place}</div>
-                <div class="info"><b>Zaman Aralığı:</b> ${formatDate(act.start)}&nbsp;&nbsp;-&nbsp;&nbsp;${formatDate(act.end)}</div>
+                <div class="info"><b>Tarih:</b> ${formatDate(act.start)}</div>
+                <div class="info"><b>Zaman Aralığı:</b> ${formatTime(act.start)}&nbsp;&nbsp;-&nbsp;&nbsp;${formatTime(act.end)}</div>
                 <div class="info"><b>Kişi sayısı:</b> <span style="color: ${participants.length >= act.maxParticipants ? "#B00000" : "#009000"}">${participants.length}/${act.maxParticipants}</div>
                 <div class="participants">
                     ${participantList}
@@ -156,9 +161,9 @@ function loadEdus() {
             nw.classList.add("activity");
             nw.id = "activity" + act.id;
             nw.innerHTML = `
+                <img class="ficon" src="assets/${act.genre}.svg" />
                 <div class="genre"><img class="genreIcon" src="assets/${act.genre}.svg" onerror="this.style.height='0'"/><div class="genreText">${act.genre}</div></div>
                 <div class="info"><b>Alt kategori:</b> ${act.subgenre}</div>
-                <div class="info"><b>Kurucu:</b> ${act.owner}</div>
                 <div class="info"><b>Yer:</b> ${act.place}</div>
                 <div class="info"><b>Başlangıç:</b> ${formatDate(act.start)}</div>
                 <div class="info"><b>Bitiş:</b> ${formatDate(act.end)}</div>
@@ -174,8 +179,8 @@ function loadEdus() {
             `;
             $("#eduContainer .list").appendChild(nw);
             nw.querySelectorAll(".participant").forEach(p => {
-                randColor(p.innerHTML).then(res => {
-                    p.style.backgroundColor = res;
+                randHue(p.innerHTML).then(res => {
+                    p.style.setProperty("--phue", res);
                 });
             });
         }
@@ -202,11 +207,15 @@ function formatMins(mins) {
 function formatDate(t) {
     var d = new Date(t);
     var now = new Date();
-    let time = `${(d.getHours() < 10 ? "0" : "") + d.getHours()}:${(d.getMinutes() < 10 ? "0" : "") + d.getMinutes()}`;
     if(now.getDate() == d.getDate() && now.getMonth() == d.getMonth() && now.getFullYear() == d.getFullYear()) {
-        return `Bugün ${time}`;
+        return `Bugün`;
     }
-    return `${time} ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`
+    return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`
+}
+function formatTime(t) {
+    var d = new Date(t);
+    let time = `${(d.getHours() < 10 ? "0" : "") + d.getHours()}:${(d.getMinutes() < 10 ? "0" : "") + d.getMinutes()}`;
+    return time;
 }
 
 resized();
@@ -216,16 +225,43 @@ loadEdus();
 function createActivity() {
     let genre = encodeURIComponent($("#actGenre").value);
     let activity = encodeURIComponent($("#actActivity").value);
-    let start = encodeURIComponent(parseDate($("#actStart").innerText));
-    let end = encodeURIComponent(parseDate($("#actEnd").innerText));
+    let start = encodeURIComponent(parseDate($("#actStart").innerText + " " + $("#actDate").innerText));
+    let end = encodeURIComponent(parseDate($("#actEnd").innerText + " " + $("#actDate").innerText));
     let place = encodeURIComponent($("#actPlace").value);
     let maxParticipants = encodeURIComponent($("#actMaxParticipants").innerText);
     let desc = encodeURIComponent($("#actDesc").value);
-    console.log(start, end);
+    if(!genre) return error("Lütfen tür seçiniz.");
+    if(!activity) return error("Lütfen alt tür seçiniz.");
+    if(!place) return error("Lütfen yer seçiniz.");
+    if(!maxParticipants) return error("Lütfen katılımcı sayısını giriniz.");
+    if(isNaN(start) || isNaN(end)) return error("Lütfen tarihi ve saatleri düzgün yazınız.");
     if(genre && activity && place && maxParticipants) {
         fetch(`createAct?genre=${genre}&activity=${activity}&place=${place}&start=${start}&end=${end}&maxParticipants=${maxParticipants}&desc=${desc}`).then(res => res.text()).then(res => {
             if(res == "1") {
                 loadActs();
+                $("#activityCreate").style.display = "none";
+            } else error(res);
+        });
+    }
+}
+
+function createEdu() {
+    let genre = encodeURIComponent($("#eduGenre").value);
+    let subgenre = encodeURIComponent($("#eduSubgenre").value);
+    let start = encodeURIComponent(parseDate($("#eduStart").innerText + " " + $("#eduDate").innerText));
+    let end = encodeURIComponent(parseDate($("#eduEnd").innerText + " " + $("#eduDate").innerText));
+    let place = encodeURIComponent($("#eduPlace").value);
+    let maxStudents = encodeURIComponent($("#eduMaxStudents").innerText);
+    let desc = encodeURIComponent($("#eduDesc").value);
+    if(!genre) return error("Lütfen tür seçiniz.");
+    if(!subgenre) return error("Lütfen alt tür seçiniz.");
+    if(!place) return error("Lütfen yer seçiniz.");
+    if(!maxStudents) return error("Lütfen öğrenci sayısını giriniz.");
+    if(isNaN(start) || isNaN(end)) return error("Lütfen tarihi ve saatleri düzgün yazınız.");
+    if(genre && subgenre && place && maxStudents) {
+        fetch(`createEdu?genre=${genre}&subgenre=${subgenre}&place=${place}&start=${start}&end=${end}&maxStudents=${maxStudents}&desc=${desc}${asTeacher ? "&asTeacher=1" : ""}`).then(res => res.text()).then(res => {
+            if(res == "1") {
+                loadEdus();
                 $("#activityCreate").style.display = "none";
             } else error(res);
         });
@@ -255,8 +291,8 @@ function interAct(id) {
     });
 }
 
-function interactEdu(id, isTeacher = false) {
-    fetch(`interactEdu?id=${id}${isTeacher ? "&isTeacher=1" : ""}`).then(res => res.text()).then(res => {
+function interactEdu(id, asTeacher = false) {
+    fetch(`interactEdu?id=${id}${asTeacher ? "&asTeacher=1" : ""}`).then(res => res.text()).then(res => {
         if(res == "1") {
             loadEdus();
         } else error(res);
@@ -271,12 +307,10 @@ function parseDate(s) {
     date.setMinutes(Number(t[1]));
     date.setSeconds(0);
     date.setMilliseconds(0);
-    if(s[1]) {
-        var d = s[1].split("/");
-        date.setDate(Number(d[0]));
-        date.setMonth(Number(d[1])-1);
-        date.setFullYear(Number(d[2]));
-    }
+    var d = s[1].split(".");
+    date.setDate(Number(d[0]));
+    date.setMonth(Number(d[1])-1);
+    date.setFullYear(Number(d[2]));
     return date.getTime();
 }
 

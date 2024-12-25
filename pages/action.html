@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Prososyal Harmoni</title>
+    <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon">
     <script src="js/script.js"></script>
     <script src="js/action.js" defer></script>
     <script src="js/statusFetcher.js"></script>
@@ -43,7 +44,9 @@
                             <option value="Spor">Spor</option>
                             <option value="Zeka Oyunları">Zeka Oyunları</option>
                             <option value="Müzik">Müzik</option>
-                            <option value="Sanat">Sanat</option>
+                            <option value="Görsel Sanatlar">Görsel Sanatlar</option>
+                            <option value="Edebiyat">Edebiyat</option>
+                            <option value="Sosyal Sorumluluk">Sosyal Sorumluluk</option>
                         </select>
                     </div>
                     <div class="custom-select">
@@ -61,12 +64,15 @@
                         <span>Katılımcı Sayısı: </span><span class="numberInput" id="actMaxParticipants" contenteditable max="10" min="2">2</span><span> kişi</span>
                     </div>
                     <div class="row">
-                        <span>Başlangıç: </span><span class="numberInput" id="actStart" contenteditable max="600" min="1">19:20</span><span></span>
-                        <span>Bitiş: </span><span class="numberInput" id="actEnd" contenteditable max="600" min="1">19:20</span><span></span>
+                        <span>Tarih: </span><span class="numberInput" id="actDate" contenteditable max="600" min="1">23.12.2024</span>
+                    </div>
+                    <div class="row">
+                        <span>Başlangıç: </span><span class="numberInput" id="actStart" contenteditable max="600" min="1">19:20</span>
+                        <span>Bitiş: </span><span class="numberInput" id="actEnd" contenteditable max="600" min="1">19:20</span>
                     </div>
                     <div class="row">
                         <div>Açıklama:</div>
-                        <textarea name="" id="actDesc" maxlength="50"></textarea>
+                        <textarea name="" id="actDesc" maxlength="50" placeholder="Aktivitenin İçeriği"></textarea>
                     </div>
                     <div class="btn" onclick="createActivity()">Oluştur</div>
                 </div>
@@ -102,15 +108,20 @@
                         </select>
                     </div>
                     <div class="row">
-                        <span>Öğrenci Kontenjanı: </span><span class="numberInput" id="eduMaxParticipants" contenteditable max="10" min="2">2</span><span> kişi</span>
+                        <span>Öğrenci Sayısı: </span><span class="numberInput" id="eduMaxStudents" contenteditable max="10" min="2">2</span><span> kişi</span>
                     </div>
                     <div class="row">
-                        <span>Başlangıç: </span><span class="numberInput" id="eduStart" contenteditable max="600" min="1">19:20</span><span></span>
+                        <span>Tarih: </span><span class="numberInput" id="eduDate" contenteditable max="600" min="1">23.12.2024</span>
                     </div>
                     <div class="row">
-                        <span>Bitiş: </span><span class="numberInput" id="eduEnd" contenteditable max="600" min="1">19:20</span><span></span>
+                        <span>Başlangıç: </span><span class="numberInput" id="eduStart" contenteditable max="600" min="1">19:20</span>
+                        <span>Bitiş: </span><span class="numberInput" id="eduEnd" contenteditable max="600" min="1">19:20</span>
                     </div>
-                    <div class="btn" onclick="createActivity()">Oluştur</div>
+                    <div class="row">
+                        <div>Açıklama:</div>
+                        <textarea name="" id="eduDesc" maxlength="50" placeholder="Eğitimin İçeriği"></textarea>
+                    </div>
+                    <div class="btn" onclick="createEdu()">Oluştur</div>
                 </div>
             </div>
             <div class="list"></div>

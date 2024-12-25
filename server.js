@@ -23,7 +23,7 @@ db.serialize(() => {
     if(reset_table) db.run("DROP TABLE edus");
     db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, secret TEXT, isAdmin BOOL DEFAULT 0, no INTEGER UNIQUE, fullname TEXT, activity INTEGER, graduation INTEGER, reviews TEXT DEFAULT \"[]\", hobbies TEXT DEFAULT \"-\", aboutMe TEXT DEFAULT \"-\")");
     db.run("CREATE TABLE IF NOT EXISTS acts (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, participants TEXT, start INTEGER, end INTEGER, place TEXT, genre TEXT, activity TEXT, maxParticipants INTEGER, started BOOL DEFAULT false, desc TEXT)");
-    db.run("CREATE TABLE IF NOT EXISTS edus (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, teachers TEXT, students TEXT, start INTEGER, end INTEGER, place TEXT, genre TEXT, subgenre TEXT, maxStudents INTEGER, started BOOL DEFAULT false)");
+    db.run("CREATE TABLE IF NOT EXISTS edus (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, teachers TEXT, students TEXT, start INTEGER, end INTEGER, place TEXT, genre TEXT, subgenre TEXT, maxStudents INTEGER, started BOOL DEFAULT false, desc TEXT)");
     if(reset_table) db.run("INSERT INTO users (name, secret, isAdmin, no, fullname, graduation) VALUES ('ege123', ?, true, 123, 'Ege Serter', 2027)", [hashString("admin")]);
     if(reset_table) db.run("INSERT INTO users (name, secret, no, fullname, graduation) VALUES ('demo', ?, 0, 'demo', 2027)", [hashString("demo")]);
     console.log("Database is ready");
@@ -148,32 +148,31 @@ function serve() {
     });
 
     app.get("/createAct", throttle(throttleTight), async (req, res) => {
-        //let currentActivity = (await SQL("SELECT activity FROM users WHERE name=?", [req.cookies.name]))[0].activity;
-        //if(currentActivity != null) return res.send("0");
         var {genre, activity, start, end, place, maxParticipants, desc} = req.query;
         start = Number(start);
         end = Number(end);
         maxParticipants = Number(maxParticipants);
-        desc = desc.slice(0, 50) || "-";
-        console.log(genre, activity);
+        desc = desc.slice(0, 80) || "-";
         if(genre && activity && start >= Date.now() && end >= start && place && maxParticipants) {
             let create = await createActivity(req.data.name, start, end, place, genre, activity, maxParticipants, desc);
-            //await SQL("UPDATE users SET activity=? WHERE name=?", [create[0].id, req.cookies.name]);
             return res.send("1");
         }
-        res.send("0");
+        res.send("Beklenmedik bir hata oluştu.");
     });
 
     app.get("/createEdu", throttle(throttleTight), async (req, res) => {
-        var {genre, subgenre, start, end, place, maxStudents, asTeacher} = req.query;
+        var {genre, subgenre, start, end, place, maxStudents, asTeacher, desc} = req.query;
         start = Number(start);
         end = Number(end);
         maxStudents = Number(maxStudents);
+        asTeacher = !!asTeacher;
+        desc = desc.slice(0, 80) || "-";
+        console.log(asTeacher);
         if(genre && subgenre && start >= Date.now() && end >= start && place && maxStudents) {
-            let create = await createEdu(req.data.name, start, end, place, genre, subgenre, maxStudents, asTeacher);
+            let create = await createEdu(req.data.name, start, end, place, genre, subgenre, maxStudents, asTeacher, desc);
             return res.send("1");
         }
-        res.send("0");
+        res.send("Beklenmedik bir hata oluştu.");
     });
 
     app.get("/interAct", throttle(throttleTight), async (req, res) => {
@@ -198,7 +197,7 @@ function serve() {
 
     app.get("/interactEdu", throttle(throttleTight), async (req, res) => {
         let id = Number(req.query.id);
-        let isTeacher = !!req.query.isTeacher;
+        let asTeacher = !!req.query.asTeacher;
         let edu = (await SQL("SELECT * FROM edus WHERE id=?", [id]))[0];
         if(edu) {
             let t = JSON.parse(edu.teachers), s = JSON.parse(edu.students);
@@ -213,7 +212,7 @@ function serve() {
                 s.splice(s.indexOf(req.data.name), 1);
                 await SQL("UPDATE edus SET students=? WHERE id=?", [JSON.stringify(s), id]);
                 res.send("1");
-            } else if(isTeacher) {
+            } else if(asTeacher) {
                 t.push(req.data.name);
                 await SQL("UPDATE edus SET teachers=? WHERE id=?", [JSON.stringify(t), id]);
                 res.send("1");
@@ -246,7 +245,7 @@ function serve() {
         res.redirect("/");
     });
 
-    app.listen(8080, "", () => {
+    app.listen(80, "", () => {
         console.log("Serving...");
     });
 }
@@ -320,6 +319,6 @@ function createActivity(owner, start, end, place, genre, activity, maxParticipan
     return SQL("INSERT INTO acts (owner, participants, start, end, place, genre, activity, maxParticipants, desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *", [owner, '["' + owner + '"]', start, end, place, genre, activity, maxParticipants, desc]);
 }
 
-function createEdu(owner, start, end, place, genre, subgenre, maxStudents, asTeacher = true) {
-    return SQL("INSERT INTO edus (owner, students, teachers, start, end, place, genre, subgenre, maxStudents) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *", [owner, !asTeacher ? '["' + owner + '"]' : "[]", asTeacher ? '["' + owner + '"]' : "[]", start, end, place, genre, subgenre, maxStudents]);
+function createEdu(owner, start, end, place, genre, subgenre, maxStudents, asTeacher, desc) {
+    return SQL("INSERT INTO edus (owner, students, teachers, start, end, place, genre, subgenre, maxStudents, desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *", [owner, !asTeacher ? '["' + owner + '"]' : "[]", asTeacher ? '["' + owner + '"]' : "[]", start, end, place, genre, subgenre, maxStudents, desc]);
 }
