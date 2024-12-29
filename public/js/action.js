@@ -165,8 +165,8 @@ function loadEdus() {
                 <div class="genre"><img class="genreIcon" src="assets/${act.genre}.svg" onerror="this.style.height='0'"/><div class="genreText">${act.genre}</div></div>
                 <div class="info"><b>Alt kategori:</b> ${act.subgenre}</div>
                 <div class="info"><b>Yer:</b> ${act.place}</div>
-                <div class="info"><b>Başlangıç:</b> ${formatDate(act.start)}</div>
-                <div class="info"><b>Bitiş:</b> ${formatDate(act.end)}</div>
+                <div class="info"><b>Tarih:</b> ${formatDate(act.start)}</div>
+                <div class="info"><b>Zaman Aralığı:</b> ${formatTime(act.start)}&nbsp;&nbsp;-&nbsp;&nbsp;${formatTime(act.end)}</div>
                 <div class="info"><b>Öğretici sayısı:</b> <span>${teachers.length}</div>
                 <div class="participants">
                     ${teacherList}
@@ -262,7 +262,7 @@ function createEdu() {
         fetch(`createEdu?genre=${genre}&subgenre=${subgenre}&place=${place}&start=${start}&end=${end}&maxStudents=${maxStudents}&desc=${desc}${asTeacher ? "&asTeacher=1" : ""}`).then(res => res.text()).then(res => {
             if(res == "1") {
                 loadEdus();
-                $("#activityCreate").style.display = "none";
+                $("#eduCreate").style.display = "none";
             } else error(res);
         });
     }

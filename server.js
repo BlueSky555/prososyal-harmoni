@@ -260,11 +260,23 @@ async function systemPeriodic() {
 
 
     var res = await SQL("DELETE FROM acts WHERE end<? RETURNING participants", [Date.now()]);
-    res.forEach(act => {
+    /*res.forEach(act => {
         JSON.parse(act.participants).forEach(attendee => {
             SQL("UPDATE users SET activity=null WHERE name=?", [attendee]);
         });
+    });*/
+
+    var res = await SQL("UPDATE edus SET started=true WHERE started=0 AND start<? RETURNING *", [Date.now()]);
+    res.forEach(edu => {
+        JSON.parse(edu.students).forEach(attendee => {
+            notifs[attendee] = {title: "Eğitim Başladı!", body: `Katılmış olduğunuz eğitim başladı.`};
+        });
+        JSON.parse(edu.teachers).forEach(attendee => {
+            notifs[attendee] = {title: "Eğitim Başladı!", body: `Katılmış olduğunuz eğitim başladı.`};
+        });
     });
+
+    var res = await SQL("DELETE FROM edus WHERE end<?", [Date.now()]);
 }
 
 setInterval(systemPeriodic, 2000);
