@@ -83,6 +83,13 @@ async function loadData() {
         $(".reviewList").appendChild(div);
     }
 
+    if(data.reviews.length == 0) {
+        let div = document.createElement("div");
+        div.innerHTML = `Bu kullanıcı hiç değerlendirilmemiş.`;
+        div.style.textAlign = "center";
+        $(".reviewList").appendChild(div);
+    }
+
     $("#infoContainer").style.display = "none";
     $("#mainContainer").style.display = "flex";
     $(".writeContainer").style.display = name == window.account ? "none" : "flex";

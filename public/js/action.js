@@ -249,13 +249,13 @@ function formatMins(mins) {
     mins -= hrs * 60;
     return (hrs ? hrs + " saat " : "") + (mins ? mins + " dakika" : "");
 }
-function formatDate(t) {
+function formatDate(t, pure = false) {
     var d = new Date(t);
     var now = new Date();
-    if(now.getDate() == d.getDate() && now.getMonth() == d.getMonth() && now.getFullYear() == d.getFullYear()) {
+    if(!pure && now.getDate() == d.getDate() && now.getMonth() == d.getMonth() && now.getFullYear() == d.getFullYear()) {
         return `Bugün`;
     }
-    return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`
+    return `${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()}`
 }
 function formatTime(t) {
     var d = new Date(t);
@@ -325,8 +325,9 @@ function createAnc() {
             method: "POST",
             body: data
         }).then(res => res.text()).then(res => {
+            console.log("hello", res);
             if(res == "1") {
-                loadAnc();
+                loadAncs();
                 $("#ancCreate").style.display = "none";
             } else error(res);
         });
@@ -387,3 +388,14 @@ if(location.href.includes("anc")) {
     select(2);
     animateSelector(2, 0);
 }
+
+function resetInputs() {
+    $("#actDate").innerHTML = formatDate(Date.now(), true);
+    $("#actStart").innerHTML = formatTime(Date.now());
+    $("#actEnd").innerHTML = formatTime(Date.now());
+    $("#eduDate").innerHTML = formatDate(Date.now(), true);
+    $("#eduStart").innerHTML = formatTime(Date.now());
+    $("#eduEnd").innerHTML = formatTime(Date.now());
+}
+
+resetInputs();

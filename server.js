@@ -171,6 +171,7 @@ function serve() {
         end = Number(end);
         maxParticipants = Number(maxParticipants);
         desc = desc.slice(0, 80) || "-";
+        if(start < Date.now()) return res.send("Aktivite henüz başlamamış olmalıdır.");
         if(genre && activity && start >= Date.now() && end >= start && place && maxParticipants) {
             let create = await createActivity(req.data.name, start, end, place, genre, activity, maxParticipants, desc);
             return res.send("1");
@@ -185,7 +186,7 @@ function serve() {
         maxStudents = Number(maxStudents);
         asTeacher = !!asTeacher;
         desc = desc.slice(0, 80) || "-";
-        console.log(asTeacher);
+        if(start < Date.now()) return res.send("Eğitim henüz başlamamış olmalıdır.");
         if(genre && subgenre && start >= Date.now() && end >= start && place && maxStudents) {
             let create = await createEdu(req.data.name, start, end, place, genre, subgenre, maxStudents, asTeacher, desc);
             return res.send("1");
@@ -200,7 +201,7 @@ function serve() {
         if(!title || !desc) return res.send("Başlık veya açıklama eksik.");
         if(desc.length < 50) return res.send("Açıklama çok kısa.");
         let filename;
-        if(req.files.file) {
+        if(req.files) {
             if(req.files.file.mimetype != "image/jpeg") return res.send("Dosya tipi desteklenmiyor.");
             filename = Date.now() + "" + req.files.file.name;
             fs.writeFile(__dirname + "/usercontent/" + filename, req.files.file.data, (err) => {
