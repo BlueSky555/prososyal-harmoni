@@ -65,7 +65,7 @@ async function loadData() {
         $("#infoName").style.color = color;
         $("#profileCard").style.setProperty("--color1", color);
     });
-    $("#infoClass").innerHTML = (2037 - data.graduation) + ". Sınıf";
+    $("#infoClass").innerHTML = classCalc(data.graduation);
     $("#infoHobbies").innerHTML = data.hobbies;
     $("#infoAboutMe").innerHTML = data.aboutMe;
     $("#averageScore").innerHTML = "Ortalama Puan: " + (data.reviews.length ? Math.round(data.reviews.reduce((a, b) => a + b.stars, 0) / data.reviews.length * 10) / 10 : "-");
@@ -101,12 +101,21 @@ loadData();
 function sendReview() {
     let text = encodeURIComponent($("#textInput").value);
     let anon = $("#anonInput").checked;
+    if(!starSelected) return error("Lütfen yıldız seçiniz.");
+    if(!text) return error("Lütfen boş alan bırakmayın.");
     if(starSelected && text) {
         fetch(`createReview?name=${name}&text=${text}&stars=${starSelected}${anon ? "&anon=1" : ""}`).then(res => res.text()).then(res => {
             if(res == "1") loadData();
             else error(res);
         });
     }
+}
+
+function classCalc(n) {
+    let c = 2037 - n;
+    if(c < 8 || c > 12) return "-";
+    if(c == 8) return "Hazırlık";
+    return c + ". Sınıf";
 }
 
 $(".modifyProfile .btn").addEventListener("click", () => {

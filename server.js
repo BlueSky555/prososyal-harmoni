@@ -1,11 +1,20 @@
-const express = require("express");
-const sqlite3 = require('sqlite3').verbose();
-const Crypto = require("crypto-js");
-const db = new sqlite3.Database('./data.db');
+import express from "express";
+import throttle from "express-throttle";
+import fileUpload from "express-fileupload";
+import cookieParser from "cookie-parser";
+import * as fs from "fs"
+import Sqlite3 from "sqlite3";
+import Crypto from "crypto-js";
+
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+    
+export const __dirname = dirname(fileURLToPath(import.meta.url));
+
 const app = express();
-const fs = require("fs");
-var throttle = require("express-throttle");
-var fileupload = require("express-fileupload");
+
+let sqlite3 = Sqlite3.verbose();
+const db = new sqlite3.Database('./data.db');
 
 var notifs = new Map();
 
@@ -18,23 +27,24 @@ let throttleTight = {
 
 var reset_table = 0;
 
-db.serialize(() => {
-    if(reset_table) db.run("DROP TABLE users");
-    if(reset_table) db.run("DROP TABLE acts");
-    if(reset_table) db.run("DROP TABLE edus");
-    db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, secret TEXT, isAdmin BOOL DEFAULT 0, no INTEGER UNIQUE, fullname TEXT, activity INTEGER, graduation INTEGER, reviews TEXT DEFAULT \"[]\", hobbies TEXT DEFAULT \"-\", aboutMe TEXT DEFAULT \"-\")");
-    db.run("CREATE TABLE IF NOT EXISTS acts (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, participants TEXT, start INTEGER, end INTEGER, place TEXT, genre TEXT, activity TEXT, maxParticipants INTEGER, started BOOL DEFAULT false, desc TEXT)");
-    db.run("CREATE TABLE IF NOT EXISTS edus (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, teachers TEXT, students TEXT, start INTEGER, end INTEGER, place TEXT, genre TEXT, subgenre TEXT, maxStudents INTEGER, started BOOL DEFAULT false, desc TEXT)");
-    db.run("CREATE TABLE IF NOT EXISTS ancs (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, end INTEGER, place TEXT, genre TEXT, desc TEXT, imageUrl TEXT)");
-    if(reset_table) db.run("INSERT INTO users (name, secret, isAdmin, no, fullname, graduation) VALUES ('ege123', ?, true, 123, 'Ege Serter', 2027)", [hashString("admin")]);
-    if(reset_table) db.run("INSERT INTO users (name, secret, no, fullname, graduation) VALUES ('demo', ?, 0, 'demo', 2027)", [hashString("demo")]);
-    console.log("Database is ready");
-    serve();
-});
+export function serializeDB() {
+    db.serialize(() => {
+        if(reset_table) db.run("DROP TABLE users");
+        if(reset_table) db.run("DROP TABLE acts");
+        if(reset_table) db.run("DROP TABLE edus");
+        db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, secret TEXT, isAdmin BOOL DEFAULT 0, no INTEGER UNIQUE, fullname TEXT, activity INTEGER, graduation INTEGER, reviews TEXT DEFAULT \"[]\", hobbies TEXT DEFAULT \"-\", aboutMe TEXT DEFAULT \"-\")");
+        db.run("CREATE TABLE IF NOT EXISTS acts (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, participants TEXT, start INTEGER, end INTEGER, place TEXT, genre TEXT, activity TEXT, maxParticipants INTEGER, started BOOL DEFAULT false, desc TEXT)");
+        db.run("CREATE TABLE IF NOT EXISTS edus (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, teachers TEXT, students TEXT, start INTEGER, end INTEGER, place TEXT, genre TEXT, subgenre TEXT, maxStudents INTEGER, started BOOL DEFAULT false, desc TEXT)");
+        db.run("CREATE TABLE IF NOT EXISTS ancs (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, end INTEGER, place TEXT, genre TEXT, desc TEXT, imageUrl TEXT)");
+        if(reset_table) db.run("INSERT INTO users (name, secret, isAdmin, no, fullname, graduation) VALUES ('ege123', ?, true, 123, 'Ege Serter', 2027)", [hashString("admin")]);
+        if(reset_table) db.run("INSERT INTO users (name, secret, no, fullname, graduation) VALUES ('demo', ?, 0, 'demo', 2027)", [hashString("demo")]);
+        console.log("Database is ready");
+    });
+}
 
-function serve() {
-    app.use(require("cookie-parser")());
-    app.use(fileupload());
+export function serve() {
+    app.use(cookieParser());
+    app.use(fileUpload());
 
     app.get("/login", async (req, res) => {
         let name = req.query.name, secret = req.query.secret;
@@ -293,7 +303,7 @@ function serve() {
     });
 }
 
-async function systemPeriodic() {
+export async function systemPeriodic() {
     var res = await SQL("UPDATE acts SET started=true WHERE started=0 AND start<? RETURNING participants", [Date.now()]);
     res.forEach(act => {
         JSON.parse(act.participants).forEach(attendee => {
@@ -322,7 +332,7 @@ async function systemPeriodic() {
     var res = await SQL("DELETE FROM edus WHERE end<?", [Date.now()]);
 }
 
-setInterval(systemPeriodic, 2000);
+//setInterval(systemPeriodic, 2000);
 
 function hashString(string) {
     return Crypto.enc.Hex.stringify(Crypto.SHA256(string));
@@ -336,7 +346,7 @@ function pullRandomQuote() {
     return [get.slice(get.indexOf('"') + 1, get.lastIndexOf('"')).trim(), get.slice(get.lastIndexOf("~") + 1).trim()]
 }
 
-const adminActions = {
+export const adminActions = {
     createUser: async (name, secret, fullname, no, graduation, admin = null) => {
         let isAdmin = admin === "YES";
         var hashed = hashString(secret);
@@ -381,9 +391,3 @@ function createEdu(owner, start, end, place, genre, subgenre, maxStudents, asTea
 function createAnc(owner, end, place, genre, desc, imageUrl) {
     return SQL("INSERT INTO ancs (owner, end, place, genre, desc, imageUrl) VALUES(?, ?, ?, ?, ?, ?) RETURNING *", [owner, end, place, genre, desc, imageUrl]);
 }
-
-// createAnc("ege123", Date.now() + 10000000, "Okul", "print(\"Hello, World!\")", `Gerçek dünyaya hoş geldin!
-// Artık bilgiyi ve veriyi güç haline getiren Python, artık sadece bir programlama dili değil, aynı zamanda sonsuz olanakların kapısını aralayacak bir anahtar konumunda. 🤗
-// Python ile karmaşık kodları çözebilir ve hem gerçek dünyanın hem de iş dünyasındaki fırsatların kapısını zorlayabilirsin.
-// Sen de kapıları aralamak istiyorsan sana bir haberimiz var! Core Python Eğitim Programı başvuruları başladı! 📢
-// Başvuru şartlarımız mı? Motivasyonunu bizimle paylaşman. YetGenli olma şartı programda aranmıyor. YetGen mezunuysan, avantajlar seni bekliyor! ✨`);
