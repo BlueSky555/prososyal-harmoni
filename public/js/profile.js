@@ -63,6 +63,7 @@ async function loadData() {
     $("#infoName").innerHTML = data.name;
     randColor(data.name, 100, 40).then(color => {
         $("#infoName").style.color = color;
+        $("#profileCard").style.setProperty("--color1", color);
     });
     $("#infoClass").innerHTML = (2037 - data.graduation) + ". Sınıf";
     $("#infoHobbies").innerHTML = data.hobbies;
@@ -100,3 +101,13 @@ function sendReview() {
         });
     }
 }
+
+$(".modifyProfile .btn").addEventListener("click", () => {
+    fetch(`modifyProfile?hobbies=${encodeURIComponent(modifyHobbies.value)}&aboutMe=${encodeURIComponent(modifyAboutMe.value)}`).then(res => res.json()).then(res => {
+        if(!res.error) {
+            loadData();
+            modifyHobbies.value = "";
+            modifyAboutMe.value = "";
+        } else error(res.error);
+    }).catch(err => error("Bir şeyler ters gitti."));
+});

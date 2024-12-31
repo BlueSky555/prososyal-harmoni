@@ -42,7 +42,7 @@
     transform: scale(0.95);
 }
 
-#activityCreate, #eduCreate {
+.create {
     display: flex;
     position: fixed;
     top: 0;
@@ -74,6 +74,10 @@
     text-wrap: wrap;
     width: 100%;
     overflow: hidden;
+}
+
+.textimg .info {
+    width: 75%;
 }
 
 .box .custom-select {
@@ -126,11 +130,13 @@
     position: relative;
     align-items: start;
     width: 70%;
-    border: 1px solid var(--light);
     border-radius: 35px;
     padding: 20px 12.5%;
     gap: 5px;
     overflow: hidden;
+    --color1: #6700cf;
+    background: linear-gradient(-60deg, hsl(from var(--color1) calc(h) s l / 0.12) 0%, hsl(from var(--color1) calc(h) s l / 0.0) 70%);
+    border: 1px solid var(--light);
 }
 
 .ficon {
@@ -160,6 +166,12 @@
 .genreText {
     font-size: 24px;
     text-transform: uppercase;
+}
+
+.textimg .genre {
+    font-size: 24px;
+    text-transform: uppercase;
+    width: 75%;
 }
 
 b {
@@ -228,3 +240,26 @@ textarea {
     height: 50px;
 }
 
+descn {
+    display: block;
+    height: 5px;
+}
+
+.ancImg {
+    box-shadow: 1px 1px 3px black;
+    position: absolute;
+    top: 50%;
+    right: 15%;
+    transform: translate(50%, -50%);
+    border-radius: 3px;
+    cursor: zoom-in;
+    max-width: 25%;
+    max-height: calc(100% - 20px);
+    width: auto;
+    height: auto;
+}
+
+.activity a, .activity a:active, .activity a:visited {
+    color: #304f88;
+    text-decoration: none;
+}

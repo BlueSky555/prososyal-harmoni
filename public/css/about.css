@@ -1,28 +1,88 @@
 #container {
     display: flex;
-    margin-top: 100px;
+    margin-top: 80px;
     width: auto;
     flex-direction: column;
     align-items: center;
 }
 
 #header {
-    display: inline-block;
+    font-size: 30px;
+    margin: 30px;
+}
+
+#purposeHeader {
     font-size: 24px;
-    display: none;
+}
+
+#membersHeader {
+    font-size: 24px;
+    margin: 60px 0 30px 0;
+}
+
+#purposes {
+    width: min(70vw, 700px);
+    padding: 30px;
+    margin-top: 10px;
+    --color1: #cf0083;
+    background: linear-gradient(-30deg, hsl(from var(--color1) calc(h + 30) s l / 0.15), hsl(from var(--color1) calc(h - 30) s l / 0.05));
+    border: 1px solid hsl(from var(--color1) h s l / 0.4);
+    border-radius: 20px;
+}
+
+#purposes > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+}
+
+#projectDesc {
+    line-height: 22px;
 }
 
 #members {
     width: min(90vw, 1000px);
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 50% 50%;
     gap: 20px;
 }
 
 .member {
-    padding: 30px;
-    background-color: hsl(from var(--main) h s l / 0.2);
-    border-radius: 10px;
-    border: 1px solid var(--light);
+    padding: 30px 30px 30px 40px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    --color1: #6700cf;
+    background: linear-gradient(-30deg, hsl(from var(--color1) calc(h + 20) s l / 0.15), hsl(from var(--color1) calc(h - 20) s l / 0.05));
+    border: 1px solid hsl(from var(--color1) h s l / 0.4);
+    line-height: 24px;
+    text-wrap: balance;
+}
+
+.member:nth-child(2) {
+    --color1: #0067cf;
+}
+
+.member:nth-child(3) {
+    --color1: #cf6700;
+}
+
+.member:nth-child(4) {
+    --color1: #67cf00;
+}
+
+.member.sh {
+    line-height: 22px;
+}
+
+.memberName {
+    font-size: 20px;
 
 }

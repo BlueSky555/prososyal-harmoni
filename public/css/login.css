@@ -45,10 +45,6 @@ input {
     margin-bottom: 10px;
 }
 
-#secret {
-    margin-bottom: 10px;
-}
-
 #submit {
     display: inline-block;
     font-size: 18px;
@@ -61,7 +57,20 @@ input {
     user-select: none;
 }
 
-#error {
-    color: #ff5566;
+#secretContainer {
+    position: relative;
     margin-bottom: 10px;
+}
+
+#showSecret {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translate(0, -50%);
+    width: 15px;
+    height: 15px;
+    background: url('../assets/eye.svg');
+    background-size: 100% 100%;
+    cursor: pointer;
 }

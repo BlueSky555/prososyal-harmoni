@@ -6,6 +6,10 @@ $("#eduCreate").onclick = (e) => {
     if(e.target == $("#eduCreate")) $("#eduCreate").style.display = "none";
 }
 
+$("#ancCreate").onclick = (e) => {
+    if(e.target == $("#ancCreate")) $("#ancCreate").style.display = "none";
+}
+
 $("#activityContainer .new").onclick = (e) => {
     $("#activityCreate").style.display = "flex";
 }
@@ -22,12 +26,20 @@ $("#eduContainer .new2").onclick = (e) => {
     $("#eduCreate").style.display = "flex";
 }
 
+$("#ancContainer .new").onclick = (e) => {
+    $("#ancCreate").style.display = "flex";
+}
+
 $("#activityContainer .refresh").onclick = (e) => {
     loadActs();
 }
 
 $("#eduContainer .refresh").onclick = (e) => {
     loadEdus();
+}
+
+$("#ancContainer .refresh").onclick = (e) => {
+    loadAncs();
 }
 
 function createActivity() {
@@ -47,8 +59,8 @@ let activityOptions = {
 };
 
 let eduOptions = {
-    "Ders": ["Matematik", "Fizik", "Kimya", "Biyoloji"],
-    "Zeka Oyunları": ["Satranç", "Dama"]
+    "Ders": ["Matematik", "Fizik", "Kimya", "Biyoloji", "Edebiyat", "Tarih", "İngilizce", "Diğer"],
+    "Zeka Oyunları": ["Satranç", "Dama", "Diğer"]
 };
 
 let asTeacher = false;
@@ -101,9 +113,9 @@ function loadActs() {
             nw.classList.add("activity");
             nw.id = "activity" + act.id;
             nw.innerHTML = `
-                <img class="ficon" src="assets/${act.genre}.svg" />
+                <img class="ficon" src="assets/${antiEjection(act.genre)}.svg" />
                 <div class="genre"><img class="genreIcon" src="assets/${act.genre}.svg" /><div class="genreText">${act.genre}</div></div>
-                <div class="info"><b>Alt kategori:</b> ${act.activity}</div>
+                <div class="info"><b>Alt kategori:</b> ${antiEjection(act.activity)}</div>
                 <div class="info"><b>Açıklama:</b> ${antiEjection(act.desc)}</div>
                 <div class="info"><b>Yer:</b> ${act.place}</div>
                 <div class="info"><b>Tarih:</b> ${formatDate(act.start)}</div>
@@ -161,9 +173,10 @@ function loadEdus() {
             nw.classList.add("activity");
             nw.id = "activity" + act.id;
             nw.innerHTML = `
-                <img class="ficon" src="assets/${act.genre}.svg" />
+                <img class="ficon" src="assets/${antiEjection(act.genre)}.svg" />
                 <div class="genre"><img class="genreIcon" src="assets/${act.genre}.svg" onerror="this.style.height='0'"/><div class="genreText">${act.genre}</div></div>
-                <div class="info"><b>Alt kategori:</b> ${act.subgenre}</div>
+                <div class="info"><b>Alt kategori:</b> ${antiEjection(act.subgenre)}</div>
+                <div class="info"><b>Açıklama:</b> ${antiEjection(act.desc)}</div>
                 <div class="info"><b>Yer:</b> ${act.place}</div>
                 <div class="info"><b>Tarih:</b> ${formatDate(act.start)}</div>
                 <div class="info"><b>Zaman Aralığı:</b> ${formatTime(act.start)}&nbsp;&nbsp;-&nbsp;&nbsp;${formatTime(act.end)}</div>
@@ -188,6 +201,38 @@ function loadEdus() {
             let emptyInfo = document.createElement("div");
             emptyInfo.innerHTML = "Herhangi bir eğitim bulunamadı.";
             $("#eduContainer .list").appendChild(emptyInfo);
+        }
+    });
+}
+
+function loadAncs() {
+    fetch("ancList").then(res => res.json()).then((res) => {
+        res = res.sort((a, b) => {
+            return b.end - a.end;
+        });
+        $("#ancContainer .list").innerHTML = "";
+        for(let act of res) {
+            var nw = document.createElement("div");
+            nw.classList.add("activity");
+            nw.id = "activity" + act.id;
+            if(act.imageUrl) nw.classList.add("textimg");
+            nw.innerHTML = `
+                <div class="genre"><img class="genreIcon" src="assets/anc.svg" onerror="this.style.height='0'"/><div class="genreText">${antiEjection(act.genre)}</div></div>
+                <div class="info">${antiEjection(act.desc).replace(/(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/g, (a) => `<a href="${a}">${a.length > 35 ? a.slice(0,35) + "…" : a}</a>`).replace(/\n/g, "<descn></descn>")}</div>
+                ${act.imageUrl ? `<img class="ancImg" src="usercontent/${act.imageUrl}" onclick="zoomImage(this)">` : ""}
+                <div class="info"><b>Duyuran:</b> <span style="cursor:pointer;" onclick="userProfile('${act.owner}')">${act.owner}</span></div>
+            `;
+            $("#ancContainer .list").appendChild(nw);
+            nw.querySelectorAll(".participant").forEach(p => {
+                randHue(p.innerHTML).then(res => {
+                    p.style.setProperty("--phue", res);
+                });
+            });
+        }
+        if(res.length == 0) {
+            let emptyInfo = document.createElement("div");
+            emptyInfo.innerHTML = "Herhangi bir eğitim bulunamadı.";
+            $("#ancContainer .list").appendChild(emptyInfo);
         }
     });
 }
@@ -221,6 +266,7 @@ function formatTime(t) {
 resized();
 loadActs();
 loadEdus();
+loadAncs();
 
 function createActivity() {
     let genre = encodeURIComponent($("#actGenre").value);
@@ -263,6 +309,25 @@ function createEdu() {
             if(res == "1") {
                 loadEdus();
                 $("#eduCreate").style.display = "none";
+            } else error(res);
+        });
+    }
+}
+
+function createAnc() {
+    let title = encodeURIComponent($("#ancTitle").value);
+    let desc = encodeURIComponent($("#ancDesc").value);
+    let file = $("#ancImage").files[0];
+    var data = new FormData()
+    data.append('file', file);
+    if(desc && title) {
+        fetch(`createAnc?title=${title}&desc=${desc}`, {
+            method: "POST",
+            body: data
+        }).then(res => res.text()).then(res => {
+            if(res == "1") {
+                loadAnc();
+                $("#ancCreate").style.display = "none";
             } else error(res);
         });
     }

@@ -12,9 +12,10 @@
     padding: 40px;
     width: 70%;
     border-radius: 20px;
-    border: 1px solid var(--light);
     gap: 40px;
     align-items: center;
+    background: linear-gradient(-60deg, hsl(from var(--color1) h s l / 0.15) 0%, transparent 70%);
+    border: 1px solid var(--color1);
 }
 
 #profileCard img {

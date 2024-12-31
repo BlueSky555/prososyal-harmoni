@@ -1,31 +1,6 @@
 var $ = (e) => document.querySelector(e);
 var $$ = (e) => document.querySelectorAll(e);
 
-window.addEventListener("load", async () => {
-    $$(".numberInput").forEach(el => {
-        /*el.addEventListener("blur", () => {
-            let mx = el.getAttribute("max");
-            let mn = el.getAttribute("min");
-            if(mx != null && Number(el.innerHTML) > mx) el.innerHTML = "" + mx;
-            if(mn != null && Number(el.innerHTML) < mn) el.innerHTML = "" + mn;
-        });
-        el.addEventListener("input", () => {
-            if(/[^0-9]/g.test(el.innerHTML)) {
-                let sel = window.getSelection();
-                let pos = sel.focusOffset - 1;
-                let target = sel.focusNode;
-                var range = document.createRange()
-                el.innerHTML = el.innerHTML.replace(/[^0-9]/g, "");
-                range.setStart(target, pos)
-                range.collapse(true)
-                
-                sel.removeAllRanges()
-                sel.addRange(range)
-            }
-        });*/
-    });
-});
-
 function userProfile(name) {
     location.href = ("/profile?q="+name);
 }
@@ -55,4 +30,58 @@ function error(t) {
     }, 6000);
 }
 
+function success(t) {
+    if(errorElement) errorElement.remove();
+    errorElement = document.createElement("div"); 
+    errorElement.id = "error";
+    errorElement.classList.add("success");
+    errorElement.innerHTML = t;
+    document.body.appendChild(errorElement);
+
+    clearTimeout(rmTimeout);
+    rmTimeout = setTimeout(() => {
+        errorElement.animate({ opacity: 0 }, {duration: 600, "easing-function": "ease", fill: "forwards"}).onfinish = () => {
+            errorElement.remove();
+        };
+    }, 6000);
+}
+
 function antiEjection(s) { return s.replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+function zoomImage(el) {
+    let rect = el.getBoundingClientRect();
+    let sw = rect.width, sh = rect.height, sx = rect.x + sw / 2, sy = rect.y + sh / 2;
+    let scale = Math.min(window.innerWidth * 0.8 / sw, window.innerHeight * 0.8 / sh);
+    let ew = sw * scale, eh = sh * scale, ex = window.innerWidth / 2, ey = window.innerHeight / 2;
+    console.log(sw, sh, sx, sy);
+    let img = document.createElement("img");
+    img.classList.add("zoomed");
+    img.src = el.src;
+    img.animate([{width: sw + "px", height: sh + "px", left: sx + "px", top: sy + "px"}, {width: ew + "px", height: eh + "px", left: ex + "px", top: ey + "px"}], {fill: "forwards", easing: "ease", duration: 400});
+    
+    let bg = document.createElement("div");
+    bg.classList.add("zoombg");
+
+    document.documentElement.appendChild(bg);
+    document.documentElement.appendChild(img);
+
+    img.addEventListener("click", () => {
+        bg.animate({opacity: 0}, {duration: 200});
+        img.animate({opacity: 0}, {duration: 200}).onfinish = () => {
+            bg.remove();
+            img.remove();
+        };
+    });
+
+    bg.addEventListener("click", () => {
+        bg.animate({opacity: 0}, {duration: 200});
+        img.animate({opacity: 0}, {duration: 200}).onfinish = () => {
+            bg.remove();
+            img.remove();
+        };
+    });
+}
+
+window.addEventListener("resize", () => {
+    $$(".zoomed, .zoombg").forEach(e => e.remove());
+});

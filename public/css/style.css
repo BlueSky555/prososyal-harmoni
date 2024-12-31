@@ -90,3 +90,26 @@ b {
     animation: from-out 200ms ease forwards;
     z-index: 999999999999999;
 }
+
+#error.success {
+    background: linear-gradient(120deg, #33aa33, #44ff44);
+}
+
+.zoomed {
+    display: block;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    z-index: 9999999999999999999999;
+    cursor: zoom-out;
+    box-shadow: 1px 1px 4px black;
+}
+
+.zoombg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999999999999999999;
+    background-color: #00000080;
+}

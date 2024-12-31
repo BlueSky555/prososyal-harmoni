@@ -72,7 +72,7 @@
                     </div>
                     <div class="row">
                         <div>Açıklama:</div>
-                        <textarea name="" id="actDesc" maxlength="50" placeholder="Aktivitenin İçeriği"></textarea>
+                        <textarea name="" id="actDesc" maxlength="200" placeholder="Aktivitenin İçeriği"></textarea>
                     </div>
                     <div class="btn" onclick="createActivity()">Oluştur</div>
                 </div>
@@ -119,7 +119,7 @@
                     </div>
                     <div class="row">
                         <div>Açıklama:</div>
-                        <textarea name="" id="eduDesc" maxlength="50" placeholder="Eğitimin İçeriği"></textarea>
+                        <textarea name="" id="eduDesc" maxlength="200" placeholder="Eğitimin İçeriği"></textarea>
                     </div>
                     <div class="btn" onclick="createEdu()">Oluştur</div>
                 </div>
@@ -128,6 +128,27 @@
             <meyeka></meyeka>
         </div>
         <div id="ancContainer" class="container" style="display: none;">
+            <div class="btnFlex">
+                <span class="new btn">Yeni duyuru oluştur</span>
+                <span class="refresh btn">Listeyi yenile</span>
+            </div>
+            <div class="create" id="ancCreate" style="display: none;">
+                <div class="box">
+                    <div class="header">Yeni Duyuru Oluştur</div>
+                    
+                    <div class="row">
+                        <div>Başlık:</div>
+                        <textarea name="" id="ancTitle" maxlength="50" placeholder="Duyuru Başlığı"></textarea>
+                    </div>
+                    <div class="row">
+                        <div>Açıklama:</div>
+                        <textarea name="" id="ancDesc" maxlength="1200" placeholder="Duyuru İçeriği"></textarea>
+                    </div>
+                    <div class="row"><span>Ek Görsel: </span><input id="ancImage" type="file" accept="image/png, image/jpg, image/jpeg"></div>
+                    <div class="btn" onclick="createAnc()">Oluştur</div>
+                </div>
+            </div>
+            <div class="list"></div>
             <space></space>
         </div>
     </div>

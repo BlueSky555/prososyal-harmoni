@@ -5,6 +5,7 @@ const db = new sqlite3.Database('./data.db');
 const app = express();
 const fs = require("fs");
 var throttle = require("express-throttle");
+var fileupload = require("express-fileupload");
 
 var notifs = new Map();
 
@@ -24,6 +25,7 @@ db.serialize(() => {
     db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, secret TEXT, isAdmin BOOL DEFAULT 0, no INTEGER UNIQUE, fullname TEXT, activity INTEGER, graduation INTEGER, reviews TEXT DEFAULT \"[]\", hobbies TEXT DEFAULT \"-\", aboutMe TEXT DEFAULT \"-\")");
     db.run("CREATE TABLE IF NOT EXISTS acts (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, participants TEXT, start INTEGER, end INTEGER, place TEXT, genre TEXT, activity TEXT, maxParticipants INTEGER, started BOOL DEFAULT false, desc TEXT)");
     db.run("CREATE TABLE IF NOT EXISTS edus (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, teachers TEXT, students TEXT, start INTEGER, end INTEGER, place TEXT, genre TEXT, subgenre TEXT, maxStudents INTEGER, started BOOL DEFAULT false, desc TEXT)");
+    db.run("CREATE TABLE IF NOT EXISTS ancs (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, end INTEGER, place TEXT, genre TEXT, desc TEXT, imageUrl TEXT)");
     if(reset_table) db.run("INSERT INTO users (name, secret, isAdmin, no, fullname, graduation) VALUES ('ege123', ?, true, 123, 'Ege Serter', 2027)", [hashString("admin")]);
     if(reset_table) db.run("INSERT INTO users (name, secret, no, fullname, graduation) VALUES ('demo', ?, 0, 'demo', 2027)", [hashString("demo")]);
     console.log("Database is ready");
@@ -32,6 +34,7 @@ db.serialize(() => {
 
 function serve() {
     app.use(require("cookie-parser")());
+    app.use(fileupload());
 
     app.get("/login", async (req, res) => {
         let name = req.query.name, secret = req.query.secret;
@@ -42,7 +45,7 @@ function serve() {
             notifs[name] = {title: "Giriş yaptınız.", body: `Hoşgeldiniz ${name}.`};
             return res.send("1");
         } else {
-            return res.send("0");
+            return res.send("Kullanıcı adınız veya şifreniz yanlış.");
         }
     });
     
@@ -50,6 +53,8 @@ function serve() {
     app.use(express.static("./public/worker"));
     
     app.use(express.static("./public"));
+
+    app.use("/usercontent", express.static("./usercontent"));
     
     // login wall
     app.use(async (req, res, next) => {
@@ -126,6 +131,19 @@ function serve() {
         res.json(edus);
     });
 
+    app.get("/ancList", async (req, res) => {
+        var ancs = await SQL("SELECT * FROM ancs");
+        res.json(ancs);
+    });
+
+    app.get("/modifyProfile", throttle(throttleTight), async (req, res) => {
+        let hobbies = req.query.hobbies.slice(0, 80);
+        let aboutMe = req.query.aboutMe.slice(0, 250);
+        if(hobbies) await SQL("UPDATE users SET hobbies=? WHERE name=?", [hobbies, req.data.name]);
+        if(aboutMe) await SQL("UPDATE users SET aboutMe=? WHERE name=?", [aboutMe, req.data.name]);
+        return res.json({});
+    });
+
     app.get("/createReview", throttle(throttleTight), async (req, res) => {
         let name = req.query.name, text = req.query.text.slice(0, 250), stars = Number(req.query.stars), anon = req.query.anon;
         let data = (await SQL("SELECT * FROM users WHERE name=?", [name]))[0];
@@ -173,6 +191,30 @@ function serve() {
             return res.send("1");
         }
         res.send("Beklenmedik bir hata oluştu.");
+    });
+
+    app.post("/createAnc", throttle(throttleTight), async (req, res) => {
+        if(!req.data.isAdmin) return res.send("Bu özellik yöneticilere özeldir.");
+        let title = req.query.title.slice(0, 50);
+        let desc = req.query.desc.slice(0, 1200);
+        if(!title || !desc) return res.send("Başlık veya açıklama eksik.");
+        if(desc.length < 50) return res.send("Açıklama çok kısa.");
+        let filename;
+        if(req.files.file) {
+            if(req.files.file.mimetype != "image/jpeg") return res.send("Dosya tipi desteklenmiyor.");
+            filename = Date.now() + "" + req.files.file.name;
+            fs.writeFile(__dirname + "/usercontent/" + filename, req.files.file.data, (err) => {
+                if(err) res.send("Resim yüklenemedi.");
+                else {
+                    createAnc(req.data.name, Date.now() + 1000*60*60*24*30, "", title, desc, filename).then(() => {
+                        res.send("1");
+                    });
+                }
+            });
+        } else {
+            await createAnc(req.data.name, Date.now() + 1000*60*60*24*30, "", title, desc, null);
+            res.send("1");
+        }
     });
 
     app.get("/interAct", throttle(throttleTight), async (req, res) => {
@@ -241,9 +283,9 @@ function serve() {
     });
     
     // redirect 404 requests to homepage
-    app.use((req, res) => {
-        res.redirect("/");
-    });
+    //app.use((req, res) => {
+    //    res.redirect("/");
+    //});
 
     app.listen(80, "", () => {
         console.log("Serving...");
@@ -334,3 +376,13 @@ function createActivity(owner, start, end, place, genre, activity, maxParticipan
 function createEdu(owner, start, end, place, genre, subgenre, maxStudents, asTeacher, desc) {
     return SQL("INSERT INTO edus (owner, students, teachers, start, end, place, genre, subgenre, maxStudents, desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *", [owner, !asTeacher ? '["' + owner + '"]' : "[]", asTeacher ? '["' + owner + '"]' : "[]", start, end, place, genre, subgenre, maxStudents, desc]);
 }
+
+function createAnc(owner, end, place, genre, desc, imageUrl) {
+    return SQL("INSERT INTO ancs (owner, end, place, genre, desc, imageUrl) VALUES(?, ?, ?, ?, ?, ?) RETURNING *", [owner, end, place, genre, desc, imageUrl]);
+}
+
+// createAnc("ege123", Date.now() + 10000000, "Okul", "print(\"Hello, World!\")", `Gerçek dünyaya hoş geldin!
+// Artık bilgiyi ve veriyi güç haline getiren Python, artık sadece bir programlama dili değil, aynı zamanda sonsuz olanakların kapısını aralayacak bir anahtar konumunda. 🤗
+// Python ile karmaşık kodları çözebilir ve hem gerçek dünyanın hem de iş dünyasındaki fırsatların kapısını zorlayabilirsin.
+// Sen de kapıları aralamak istiyorsan sana bir haberimiz var! Core Python Eğitim Programı başvuruları başladı! 📢
+// Başvuru şartlarımız mı? Motivasyonunu bizimle paylaşman. YetGenli olma şartı programda aranmıyor. YetGen mezunuysan, avantajlar seni bekliyor! ✨`);

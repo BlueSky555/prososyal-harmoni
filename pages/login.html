@@ -13,9 +13,13 @@
     <div class="center">
         <div class="title">PROSOSYAL HARMONI</div>
         <div class="desc">Siteyi kullanabilmek için giriş yapmalısınız.</div>
-        <div class="help">Hesabım Yok / Şifremi Hatırlamıyorum</div>
+        <!--<div class="help">Hesabım Yok / Şifremi Unuttum</div>-->
+        <br>
         <input type="text" name="" id="name" autocomplete="off" spellcheck="false" placeholder="Kullanıcı adınız">
-        <input type="password" name="" id="secret" placeholder="Şifreniz">
+        <div id="secretContainer">
+            <input type="password" name="" id="secret" placeholder="Şifreniz">
+            <div id="showSecret"></div>
+        </div>
         <button id="submit">Giriş yap</button>
     </div>
 </body>

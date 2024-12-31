@@ -28,7 +28,7 @@
     font-size: 24px;
     height: 30vh;
     --color1: #6700cf;
-    background: linear-gradient(-30deg, hsl(from var(--color1) calc(h + 20) s l / 0.2), hsl(from var(--color1) calc(h - 20) s l / 0.2));
+    background: linear-gradient(-30deg, hsl(from var(--color1) calc(h + 20) s l / 0.2), hsl(from var(--color1) calc(h - 20) s l / 0.1));
     border: 1px solid hsl(from var(--color1) h s l / 0.4);
     border-radius: 20px;
     display: flex;
