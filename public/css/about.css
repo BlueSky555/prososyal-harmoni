@@ -43,6 +43,7 @@
 
 #projectDesc {
     line-height: 22px;
+    text-align: justify;
 }
 
 #members {
@@ -64,6 +65,7 @@
     border: 1px solid hsl(from var(--color1) h s l / 0.4);
     line-height: 24px;
     text-wrap: balance;
+    text-align: justify;
 }
 
 .member:nth-child(2) {

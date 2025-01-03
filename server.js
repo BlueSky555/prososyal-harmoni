@@ -380,6 +380,31 @@ function SQL(sql, args) {
     });
 }
 
+function massCreateUser(data) {
+    let rows = data.split("\n");
+    
+    rows.forEach(r => {
+        r = r.trim();
+        let columns = r.split(",").map(c => c.trim().slice(1, -1).trim());
+        let name = nameCase(columns[2]);
+        let no = Number(columns[3]);
+        let classroom = columns[4];
+        let password = columns[5];
+    
+        let nickname = name.split(" ")[0].toLowerCase().replace(/i̇/g, "i").replace(/ş/g, "s").replace(/ç/g, "c").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ğ/g, "g") + no;
+        let graduation = 2037 - Number(classroom.slice(0, -2));
+        if(classroom.startsWith("Haz")) graduation = 2029;
+
+        console.log(nickname, password, name, no, graduation);
+    
+        adminActions.createUser(nickname, password, name, no, graduation, false).catch(err => {});
+    });
+}
+
+function nameCase(s) {
+    return s.split(" ").map(t => t[0].toUpperCase() + t.slice(1).toLowerCase()).join(" ");
+}
+
 function createActivity(owner, start, end, place, genre, activity, maxParticipants, desc) {
     return SQL("INSERT INTO acts (owner, participants, start, end, place, genre, activity, maxParticipants, desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *", [owner, '["' + owner + '"]', start, end, place, genre, activity, maxParticipants, desc]);
 }
