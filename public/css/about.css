@@ -80,8 +80,8 @@
     --color1: #67cf00;
 }
 
-.member.sh {
-    line-height: 22px;
+.member .sh {
+    line-height: 2px;
 }
 
 .memberName {

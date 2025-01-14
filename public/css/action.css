@@ -263,3 +263,9 @@ descn {
     color: #304f88;
     text-decoration: none;
 }
+
+.create a, .create a:visited, .create a:active {
+    color: var(--main);
+    font-size: 14px;
+    margin: 5px 0px 0px 0px;
+}

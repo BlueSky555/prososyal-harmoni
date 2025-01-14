@@ -56,6 +56,8 @@
     overflow: hidden;
     border: 1px solid var(--light);
     border-top: none;
+    max-height: 250px;
+    overflow-y: auto;
   }
 
   .select-items div:not(:last-child) {

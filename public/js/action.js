@@ -348,6 +348,11 @@ $("#eduGenre").onchange = () => {
     customizeSelect($("#eduSubgenre").parentElement);
 };
 
+let placeOptions = "<option value selected default>-Yer Seçiniz-</option>" + places.map(o => `<option value=${o.name}>${o.name}</option>`);
+$("#actPlace").innerHTML = placeOptions;
+customizeSelect($("#actPlace").parentElement);
+$("#eduPlace").innerHTML = placeOptions;
+customizeSelect($("#eduPlace").parentElement);
 
 function interAct(id) {
     fetch(`interAct?id=${id}`).then(res => res.text()).then(res => {

@@ -292,11 +292,19 @@ export function serve() {
     app.get("/about", (req, res) => {
         res.sendFile(__dirname + "/pages/about.html");
     });
+
+    app.get("/places", (req, res) => {
+        res.sendFile(__dirname + "/pages/places.html");
+    });
     
     // redirect 404 requests to homepage
     //app.use((req, res) => {
     //    res.redirect("/");
     //});
+
+    app.get("/credits", (req, res) => {
+        res.send("Ege Serter 2024-2025.");
+    });
 
     app.listen(80, "", () => {
         console.log("Serving...");
